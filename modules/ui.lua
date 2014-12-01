@@ -46,7 +46,7 @@ end
 
 local function CreateEPGPFrame()
   -- EPGPFrame
-  local f = CreateFrame("Frame", "EPGPFrame", UIParent)
+  local f = CreateFrame("Frame", "EPGPFrame", UIParent, "ButtonFrameTemplate")
   f:Hide()
   f:SetToplevel(true)
   f:EnableMouse(true)
@@ -57,17 +57,18 @@ local function CreateEPGPFrame()
   f:SetAttribute("UIPanelLayout-pushable", 5)
   f:SetAttribute("UIPanelLayout-whileDead", true)
 
-  f:SetWidth(384)
+  f:SetWidth(448)
   f:SetHeight(512)
   f:SetPoint("TOPLEFT", nil, "TOPLEFT", 0, -104)
-  f:SetHitRectInsets(0, 30, 0, 45)
+  --f:SetHitRectInsets(0, 30, 0, 45)
 
-  local t = f:CreateTexture(nil, "BACKGROUND")
+  local t = f:CreateTexture(nil, "ARTWORK", 1)
   t:SetTexture("Interface\\PetitionFrame\\GuildCharter-Icon")
   t:SetWidth(60)
   t:SetHeight(60)
-  t:SetPoint("TOPLEFT", f, "TOPLEFT", 7, -6)
+  t:SetPoint("TOPLEFT", f, "TOPLEFT", -9, 8)
 
+  --[[
   t = f:CreateTexture(nil, "ARTWORK")
   t:SetTexture("Interface\\ClassTrainerFrame\\UI-ClassTrainer-TopLeft")
   t:SetWidth(256)
@@ -87,20 +88,18 @@ local function CreateEPGPFrame()
   t:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 0, 0)
 
   t = f:CreateTexture(nil, "ARTWORK")
-  t:SetTexture(
-    "Interface\\PaperDollInfoFrame\\UI-Character-General-BottomRight")
+  t:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-BottomRight")
   t:SetWidth(128)
   t:SetHeight(256)
   t:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", 0, 0)
+  ]]--
 
-  t = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-  t:SetWidth(250)
-  t:SetHeight(16)
-  t:SetPoint("TOP", f, "TOP", 3, -16)
-  t:SetText("EPGP "..EPGP.version)
+  EPGPFrameTitleText:SetText("EPGP "..EPGP.version)
 
+  --[[
   local cb = CreateFrame("Button", nil, f, "UIPanelCloseButton")
   cb:SetPoint("TOPRIGHT", f, "TOPRIGHT", -30, -8)
+  ]]--
 
   f:SetScript("OnHide", ToggleOnlySideFrame)
 end
@@ -333,7 +332,7 @@ local function CreateEPGPLogFrame()
   f:Hide()
   f:SetWidth(600)
   f:SetHeight(435)
-  f:SetPoint("TOPLEFT", EPGPFrame, "TOPRIGHT", -37, -6)
+  f:SetPoint("TOPLEFT", EPGPFrame, "TOPRIGHT", 0, 0)
 
   local t = f:CreateTexture(nil, "OVERLAY")
   t:SetTexture("Interface\\DialogFrame\\UI-DialogBox-Corner")
@@ -504,7 +503,7 @@ local function CreateEPGPLogFrame()
   scrollBar:SetHeight(scrollParent:GetHeight() - 10)
   scrollBar:SetPoint("TOPRIGHT", scrollParent, "TOPRIGHT", -28, -6)
 
-  function LogChanged()
+  local function LogChanged()
     if not EPGPLogFrame:IsVisible() then
       return
     end
@@ -924,7 +923,7 @@ local function CreateEPGPSideFrame(self)
   f:Hide()
   f:SetWidth(225)
   f:SetHeight(255)
-  f:SetPoint("TOPLEFT", EPGPFrame, "TOPRIGHT", -33, -20)
+  f:SetPoint("TOPLEFT", EPGPFrame, "TOPRIGHT", 0, 0)
 
   local h = f:CreateTexture(nil, "ARTWORK")
   h:SetTexture("Interface\\DialogFrame\\UI-DialogBox-Header")
@@ -999,7 +998,7 @@ local function CreateEPGPSideFrame2()
   f:Hide()
   f:SetWidth(225)
   f:SetHeight(165)
-  f:SetPoint("BOTTOMLEFT", EPGPFrame, "BOTTOMRIGHT", -33, 72)
+  f:SetPoint("BOTTOMLEFT", EPGPFrame, "BOTTOMRIGHT", 0, 0)
 
   f:SetBackdrop(
     {
@@ -1118,10 +1117,10 @@ local function CreateEPGPFrameStandings()
   CreateEPGPSideFrame2()
 
   -- Make the main frame
-  local main = CreateFrame("Frame", nil, EPGPFrame)
-  main:SetWidth(325)
-  main:SetHeight(358)
-  main:SetPoint("TOPLEFT", EPGPFrame, 19, -72)
+  local main = CreateFrame("Frame", "epgpmain", EPGPFrame)
+  main:SetWidth(434)
+  main:SetHeight(445)
+  main:SetPoint("TOPLEFT", EPGPFrame, 6, -63)
 
   local award = CreateFrame("Button", nil, main, "UIPanelButtonTemplate")
   award:SetNormalFontObject("GameFontNormalSmall")
@@ -1256,9 +1255,9 @@ local function CreateEPGPFrameStandings()
 
   -- Populate the table
   CreateTable(tabl,
-              {"Name", "EP", "GP", "PR"},
-              {0, 64, 64, 64},
-              {"LEFT", "RIGHT", "RIGHT", "RIGHT"},
+              {"Name", "EP", "GP", "PR", "TEP"},
+              {0, 64, 64, 64, 64},
+              {"LEFT", "RIGHT", "RIGHT", "RIGHT", "RIGHT"},
               27)  -- The scrollBarWidth
 
   -- Make the scrollbar
@@ -1326,6 +1325,8 @@ local function CreateEPGPFrameStandings()
     "OnClick", function(self) EPGP:StandingsSort("GP") end)
   tabl.headers[4]:SetScript(
     "OnClick", function(self) EPGP:StandingsSort("PR") end)
+  tabl.headers[5]:SetScript(
+    "OnClick", function(self) EPGP:StandingsSort("TEP") end)
 
   -- Install the update function on rowFrame.
   local function UpdateStandings()
@@ -1344,9 +1345,10 @@ local function CreateEPGPFrameStandings()
         row.cells[1]:SetText(row.name)
         local c = RAID_CLASS_COLORS[EPGP:GetClass(row.name)]
         row.cells[1]:SetTextColor(c.r, c.g, c.b)
-        local ep, gp = EPGP:GetEPGP(row.name)
+        local ep, gp, tep = EPGP:GetEPGP(row.name)
         row.cells[2]:SetText(ep)
         row.cells[3]:SetText(gp)
+        row.cells[5]:SetText(tep)
         local pr = 0
         if gp then
           pr = ep / gp

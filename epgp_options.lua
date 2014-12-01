@@ -6,7 +6,7 @@ local LLN = LibStub("LibLootNotify-1.0")
 
 function EPGP:SetupOptions()
   local options = {
-    name = "EPGP",
+    name = "EPGP-TEP",
     type = "group",
     childGroups = "tab",
     handler = self,
@@ -27,7 +27,7 @@ function EPGP:SetupOptions()
         name = L["List errors"],
         desc = L["Lists errors during officer note parsing to the default chat frame. Examples are members with an invalid officer note."],
         func = function()
-                 outputFunc = function(s) DEFAULT_CHAT_FRAME:AddMessage(s) end
+                 local outputFunc = function(s) DEFAULT_CHAT_FRAME:AddMessage(s) end
                  EPGP:ReportErrors(outputFunc)
                end,
       },
@@ -59,7 +59,7 @@ function EPGP:SetupOptions()
   registry:RegisterOptionsTable("EPGP Options", options)
 
   local dialog = LibStub("AceConfigDialog-3.0")
-  dialog:AddToBlizOptions("EPGP Options", "EPGP")
+  dialog:AddToBlizOptions("EPGP Options", "EPGP-TEP")
 
   -- Setup options for each module that defines them.
   for name, m in self:IterateModules() do
@@ -97,7 +97,7 @@ function EPGP:SetupOptions()
                                       get = "GetDBVar",
                                       set = "SetDBVar",
                                     })
-      dialog:AddToBlizOptions("EPGP " .. name, m.optionsName, "EPGP")
+      dialog:AddToBlizOptions("EPGP " .. name, m.optionsName, "EPGP-TEP")
     end
   end
 
@@ -108,7 +108,7 @@ function EPGP:ProcessCommand(str)
   str = str:gsub("%%t", UnitName("target") or "notarget")
   local command, nextpos = self:GetArgs(str, 1)
   if command == "config" then
-    InterfaceOptionsFrame_OpenToCategory("EPGP")
+    InterfaceOptionsFrame_OpenToCategory("EPGP-TEP")
   elseif command == "debug" then
     Debug:Toggle()
   elseif command == "massep" then

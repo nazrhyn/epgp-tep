@@ -1,11 +1,11 @@
 ## Interface: 60000
-## Title: EPGP
-## Notes: Effort Points/Gear Points Loot System
-## Author: Alkis Evlogimenos
+## Title: EPGP-TEP
+## Notes: Effort Points/Gear Points Loot System With Total EP Tracking
+## Author: pelf
 ## Version: 5.10.8
-## SavedVariables: EPGP_DB
+## SavedVariables: EPGP_TEP_DB
 ## X-Category: Guild
-## X-Website: http://code.google.com/p/epgp/
+## X-Website: https://github.com/nazrhyn/epgp-tep
 ## X-Compatible-With: 60000
 ## X-Since-Interface: 60000
 
