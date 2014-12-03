@@ -526,10 +526,10 @@ local CUSTOM_ITEM_DATA = {
 -- Used to add extra GP if the item contains bonus stats
 -- generally considered chargeable.
 local ITEM_BONUS_GP = {
-  [40]  = 25,  -- avoidance
-  [41]  = 25,  -- leech
-  [42]  = 25,  -- speed
-  [43]  = 25,  -- indestructible
+  [40]  = 0,  -- avoidance, no material value
+  [41]  = 0,  -- leech, no material value
+  [42]  = 25,  -- speed, arguably useful, so 25 gp
+  [43]  = 0,  -- indestructible, no material value
   [523] = 200, -- extra socket
   [563] = 200, -- extra socket
   [564] = 200, -- extra socket
