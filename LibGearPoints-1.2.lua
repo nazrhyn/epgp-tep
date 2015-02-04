@@ -673,7 +673,7 @@ function lib:GetValue(item)
   elseif version < 60000 or level_cap == 90 then
     standard_ilvl = 553
   else
-    standard_ilvl = 670
+    standard_ilvl = 680
     ilvl_denominator = 30
   end
   local multiplier = 1000 * 2 ^ (-standard_ilvl / ilvl_denominator)

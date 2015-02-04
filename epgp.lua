@@ -578,7 +578,18 @@ function EPGP:RescaleGP()
     local ep, gp, main = EPGP:GetEPGP(m)
     actual_gp = gp - EPGP:GetBaseGP()
     if main == nil and actual_gp > 0 then
-      local delta = -(actual_gp - actual_gp / 2 ^ (26/26))
+      local decay_ilvl
+      local ilvl_denominator = 26
+      local version = select(4, GetBuildInfo())
+      local level_cap = MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]
+      if version < 60000 or level_cap == 90 then
+        decay_ilvl = 26
+      else
+        decay_ilvl = 10
+        ilvl_denominator = 30
+      end
+
+      local delta = -(actual_gp - actual_gp / 2 ^ (decay_ilvl/ilvl_denominator))
       EPGP:IncGPBy(m, "GP Rescale", delta, true, false)
       if delta > 0 then
 	callbacks:Fire("GPAward", name, "GP Decay", delta, true)
