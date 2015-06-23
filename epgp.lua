@@ -584,8 +584,11 @@ function EPGP:RescaleGP()
       local level_cap = MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]
       if version < 60000 or level_cap == 90 then
         decay_ilvl = 26
-      else
+      elseif version < 60200 then
         decay_ilvl = 10
+        ilvl_denominator = 30
+      else
+        decay_ilvl = 30
         ilvl_denominator = 30
       end
 

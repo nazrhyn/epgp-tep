@@ -494,33 +494,59 @@ local CUSTOM_ITEM_DATA = {
   -- Item IDs are identical across difficulties, so specify nil for item level
   -- and specify the tier number instead: the raid difficulty and tier number
   -- will be used to get the item level.
-  [119309] = { 4, 665, "INVTYPE_SHOULDER", true },
-  [119322] = { 4, 665, "INVTYPE_SHOULDER", true },
-  [119314] = { 4, 665, "INVTYPE_SHOULDER", true },
+  [119309] = { 4, 670, "INVTYPE_SHOULDER", true },
+  [119322] = { 4, 670, "INVTYPE_SHOULDER", true },
+  [119314] = { 4, 670, "INVTYPE_SHOULDER", true },
 
-  [119307] = { 4, 665, "INVTYPE_LEGS", true },
-  [119320] = { 4, 665, "INVTYPE_LEGS", true },
-  [119313] = { 4, 665, "INVTYPE_LEGS", true },
+  [119307] = { 4, 670, "INVTYPE_LEGS", true },
+  [119320] = { 4, 670, "INVTYPE_LEGS", true },
+  [119313] = { 4, 670, "INVTYPE_LEGS", true },
 
-  [119308] = { 4, 665, "INVTYPE_HEAD", true },
-  [119321] = { 4, 665, "INVTYPE_HEAD", true },
-  [119312] = { 4, 665, "INVTYPE_HEAD", true },
+  [119308] = { 4, 670, "INVTYPE_HEAD", true },
+  [119321] = { 4, 670, "INVTYPE_HEAD", true },
+  [119312] = { 4, 670, "INVTYPE_HEAD", true },
 
-  [119306] = { 4, 665, "INVTYPE_HAND", true },
-  [119319] = { 4, 665, "INVTYPE_HAND", true },
-  [119311] = { 4, 665, "INVTYPE_HAND", true },
+  [119306] = { 4, 670, "INVTYPE_HAND", true },
+  [119319] = { 4, 670, "INVTYPE_HAND", true },
+  [119311] = { 4, 670, "INVTYPE_HAND", true },
 
-  [119305] = { 4, 665, "INVTYPE_CHEST", true },
-  [119318] = { 4, 665, "INVTYPE_CHEST", true },
-  [119315] = { 4, 665, "INVTYPE_CHEST", true },
+  [119305] = { 4, 670, "INVTYPE_CHEST", true },
+  [119318] = { 4, 670, "INVTYPE_CHEST", true },
+  [119315] = { 4, 670, "INVTYPE_CHEST", true },
 
   -- T17 essences
-  [119310] = { 4, 665, "INVTYPE_HEAD", true },
-  [120277] = { 4, 665, "INVTYPE_HEAD", true },
-  [119323] = { 4, 665, "INVTYPE_HEAD", true },
-  [120279] = { 4, 665, "INVTYPE_HEAD", true },
-  [119316] = { 4, 665, "INVTYPE_HEAD", true },
-  [120278] = { 4, 665, "INVTYPE_HEAD", true },
+  [119310] = { 4, 670, "INVTYPE_HEAD", true },
+  [120277] = { 4, 670, "INVTYPE_HEAD", true },
+  [119323] = { 4, 670, "INVTYPE_HEAD", true },
+  [120279] = { 4, 670, "INVTYPE_HEAD", true },
+  [119316] = { 4, 670, "INVTYPE_HEAD", true },
+  [120278] = { 4, 670, "INVTYPE_HEAD", true },
+  
+  -- T18
+  [127957] = { 4, 695, "INVTYPE_SHOULDER", true },
+  [127967] = { 4, 695, "INVTYPE_SHOULDER", true },
+  [127961] = { 4, 695, "INVTYPE_SHOULDER", true },
+
+  [127955] = { 4, 695, "INVTYPE_LEGS", true },
+  [127965] = { 4, 695, "INVTYPE_LEGS", true },
+  [127960] = { 4, 695, "INVTYPE_LEGS", true },
+
+  [127956] = { 4, 695, "INVTYPE_HEAD", true },
+  [127966] = { 4, 695, "INVTYPE_HEAD", true },
+  [127959] = { 4, 695, "INVTYPE_HEAD", true },
+
+  [127954] = { 4, 695, "INVTYPE_HAND", true },
+  [127964] = { 4, 695, "INVTYPE_HAND", true },
+  [127958] = { 4, 695, "INVTYPE_HAND", true },
+
+  [127953] = { 4, 695, "INVTYPE_CHEST", true },
+  [127963] = { 4, 695, "INVTYPE_CHEST", true },
+  [127962] = { 4, 695, "INVTYPE_CHEST", true },
+
+  -- T18 trinket tokens (note: slightly higher ilvl)
+  [127969] = { 4, 705, "INVTYPE_TRINKET", true },
+  [127970] = { 4, 705, "INVTYPE_TRINKET", true },
+  [127968] = { 4, 705, "INVTYPE_TRINKET", true },
 }
 
 -- Used to add extra GP if the item contains bonus stats
@@ -672,8 +698,11 @@ function lib:GetValue(item)
     standard_ilvl = 522
   elseif version < 60000 or level_cap == 90 then
     standard_ilvl = 553
-  else
+  elseif version < 60200 then
     standard_ilvl = 680
+    ilvl_denominator = 30
+  else
+    standard_ilvl = 710
     ilvl_denominator = 30
   end
   local multiplier = 1000 * 2 ^ (-standard_ilvl / ilvl_denominator)
