@@ -185,7 +185,7 @@ selected._count = 0  -- This is safe since _ is not allowed in names
 
 -- for compatibility with release of EPGP Lootmaster; remove after new LM is pushed
 function EPGP:UnitInRaid(name)
-  return UnitInRaid(name)
+  return UnitInRaid(Ambiguate(name, "none"))
 end
 
 function EPGP:DecodeNote(note)
@@ -229,8 +229,8 @@ end
 -- A wrapper function to handle sort logic for selected
 local function ComparatorWrapper(f)
   return function(a, b)
-           local a_in_raid = not not UnitInRaid(a)
-           local b_in_raid = not not UnitInRaid(b)
+           local a_in_raid = not not UnitInRaid(Ambiguate(a, "none"))
+           local b_in_raid = not not UnitInRaid(Ambiguate(b, "none"))
            if a_in_raid ~= b_in_raid then
              return not b_in_raid
            end
@@ -299,12 +299,12 @@ local function RefreshStandings(order, showEveryone)
     ---  showEveryone = false: show all in raid (including alts) and
     ---  all selected members
     for n in pairs(ep_data) do
-      if showEveryone or UnitInRaid(n) or selected[n] then
+      if showEveryone or UnitInRaid(Ambiguate(n, "none")) or selected[n] then
         table.insert(standings, n)
       end
     end
     for n in pairs(main_data) do
-      if UnitInRaid(n) or selected[n] then
+      if UnitInRaid(Ambiguate(n, "none")) or selected[n] then
         table.insert(standings, n)
       end
     end
@@ -469,7 +469,7 @@ end
 function EPGP:SelectMember(name)
   if UnitInRaid("player") then
     -- Only allow selecting members that are not in raid when in raid.
-    if UnitInRaid(name) then
+    if UnitInRaid(Ambiguate(name, "none")) then
       return false
     end
   end
@@ -482,7 +482,7 @@ end
 function EPGP:DeSelectMember(name)
   if UnitInRaid("player") then
     -- Only allow deselecting members that are not in raid when in raid.
-    if UnitInRaid(name) then
+    if UnitInRaid(Ambiguate(name, "none")) then
       return false
     end
   end
@@ -511,7 +511,7 @@ function EPGP:IsMemberInAwardList(name)
   if UnitInRaid("player") then
     -- If we are in raid the member is in the award list if it is in
     -- the raid or the selected list.
-    return UnitInRaid(name) or selected[name]
+    return UnitInRaid(Ambiguate(name, "none")) or selected[name]
   else
     -- If we are not in raid and there is noone selected everyone will
     -- get an award.
@@ -866,7 +866,7 @@ function EPGP:GROUP_ROSTER_UPDATE()
     -- If we are in a raid, make sure no member of the raid is
     -- selected
     for name,_ in pairs(selected) do
-      if UnitInRaid(name) then
+      if UnitInRaid(Ambiguate(name, "none")) then
         selected[name] = nil
         selected._count = selected._count - 1
       end

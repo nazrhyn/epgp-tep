@@ -1307,7 +1307,7 @@ local function CreateEPGPFrameStandings()
         if EPGP:GetNumAlts(self.name) > 0 then
           GameTooltip:AddLine("\n"..L["Alts"])
           for i=1,EPGP:GetNumAlts(self.name) do
-            GameTooltip:AddLine(EPGP:GetAlt(self.name, i), 1, 1, 1)
+            GameTooltip:AddLine(Ambiguate(EPGP:GetAlt(self.name, i), "short"), 1, 1, 1)
           end
         end
         GameTooltip:ClearAllPoints()
@@ -1341,7 +1341,7 @@ local function CreateEPGPFrameStandings()
       local j = i + offset
       if j <= numMembers then
         row.name = EPGP:GetMember(j)
-        row.cells[1]:SetText(row.name)
+        row.cells[1]:SetText(Ambiguate(row.name, "short"))
         local c = RAID_CLASS_COLORS[EPGP:GetClass(row.name)]
         row.cells[1]:SetTextColor(c.r, c.g, c.b)
         local ep, gp = EPGP:GetEPGP(row.name)

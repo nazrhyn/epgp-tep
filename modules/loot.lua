@@ -33,10 +33,12 @@ local function ShowPopup(player, item, quantity)
   while in_combat or DLG:ActiveDialog("EPGP_CONFIRM_GP_CREDIT") do
     Coroutine:Sleep(0.1)
   end
-
-  if EPGP:GetEPGP(player) then
+  if EPGP:GetEPGP(player)  then
     local itemName, itemLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(item)
     DLG:Spawn("EPGP_CONFIRM_GP_CREDIT", {name = player, item = itemLink, icon = itemTexture})
+  elseif  EPGP:GetEPGP(player .. "-" .. GetRealmName()) then
+    local itemName, itemLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(item)
+    DLG:Spawn("EPGP_CONFIRM_GP_CREDIT", {name = player .. "-" .. GetRealmName(), item = itemLink, icon = itemTexture})
   end
 end
 
