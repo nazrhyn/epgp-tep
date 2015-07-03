@@ -34,6 +34,9 @@ local distributionTimers = {}
 -- Sets the timeout before emulating a loot message
 local EMULATE_TIMEOUT = 5
 
+-- coin currency ID
+local currentCurrencyID = nil
+
 -- Create a handle for a emulation timer
 local function GenerateDistributionID(player, itemLink, quantity)
   local itemid, suffixid, uniqueid = tostring(itemLink):match("|Hitem:(%d+):%d+:%d+:%d+:%d+:%d+:(\-*%d+):(\-*%d+)")
@@ -281,7 +284,6 @@ frame:RegisterEvent("SPELL_CONFIRMATION_PROMPT")
 lib:RegisterComm("EPGPBONUS", lib.BonusMessageReceiver)
 lib:RegisterComm("EPGPCORPSELOOT", CorpseLootReceiver)
 
-local currentCurrencyID = nil
 frame:SetScript("OnEvent",
   function(self, event, ...)
     if event == "CHAT_MSG_LOOT" then
