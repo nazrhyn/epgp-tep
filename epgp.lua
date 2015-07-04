@@ -416,9 +416,9 @@ function EPGP:ExportRoster()
     local base_gp = self.db.profile.base_gp
     local t = {}
     for name, _ in pairs(ep_data) do
-        local ep, gp, tep, main = self:GetEPGP(name)
-        if ep ~= 0 or gp ~= base_gp or tep ~= 0 then
-            table.insert(t, { name, ep, gp, tep })
+        local ep, gp, _, main = self:GetEPGP(name)
+        if ep ~= 0 or gp ~= base_gp then
+            table.insert(t, { name, ep, gp })
         end
     end
     return t
