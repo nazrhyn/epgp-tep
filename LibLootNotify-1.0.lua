@@ -34,13 +34,16 @@ local distributionTimers = {}
 -- Sets the timeout before emulating a loot message
 local EMULATE_TIMEOUT = 5
 
+-- coin currency ID
+local currentCurrencyID = nil
+
 -- Create a handle for a emulation timer
 local function GenerateDistributionID(player, itemLink, quantity)
   local itemid, suffixid, uniqueid = tostring(itemLink):match("|Hitem:(%d+):%d+:%d+:%d+:%d+:%d+:(\-*%d+):(\-*%d+)")
   return format('%s:%s:%s',
-                tostring(player),
-		tostring(itemid..":"..uniqueid),
-                tostring(quantity))
+          tostring(player),
+          tostring(itemid..":"..uniqueid),
+          tostring(quantity))
 end
 
 local function ParseLootMessage(msg)
@@ -83,13 +86,13 @@ function lib.BonusMessageReceiver(prefix, message, distribution, sender)
 end
 
 local function HandleBonusLootResult(rewardType, rewardLink, rewardQuantity)
-  local _, numCoins = GetCurrencyInfo(currentCurrencyID or 776)
+  local _, numCoins = GetCurrencyInfo(currentCurrencyID or 0)
   lib:SendCommMessage("EPGPBONUS", format("BONUS_LOOT_RESULT^%s^%s^%s^%s",
-					  tostring(rewardType),
-					  tostring(rewardLink),
-					  tostring(numCoins),
-					  tostring(currentCurrencyID or 0)),
-		      "RAID", nil, "ALERT")
+          tostring(rewardType),
+          tostring(rewardLink),
+          tostring(numCoins),
+          tostring(currentCurrencyID or 0)),
+          "RAID", nil, "ALERT")
 end
 
 -- Just add items here; the itemLink has a unique id, so this will
@@ -100,6 +103,22 @@ local function CorpseLootReceiver(prefix, message, distribution, sender)
   announcedLoot[message] = true
 end
 
+local function removeSpecId(itemLink)
+  local w, i, link
+  i = 0
+  link = ''
+
+  for w in gmatch(itemLink .. ':', '([^:]*):') do
+    i = i + 1
+    if i == 11 then
+      w = 0
+    end
+    link = link .. w .. ':'
+  end
+
+  return link:sub(1, -2)
+end
+
 local function HandleLootWindow()
   local loot = {}
   -- Don't send events if we're not in a raid or are in LFR
@@ -108,9 +127,12 @@ local function HandleLootWindow()
 
   for i = 1, GetNumLootItems() do
     local itemLink = GetLootSlotLink(i)
-    if itemLink ~= nil and announcedLoot[itemLink] == nil then
-      table.insert(loot, itemLink)
-      announcedLoot[itemLink] = true
+    if itemLink ~= nil then
+      itemLink = removeSpecId(itemLink)
+      if announcedLoot[itemLink] == nil then
+        table.insert(loot, itemLink)
+        announcedLoot[itemLink] = true
+      end
     end
   end
   if #loot > 0 then
@@ -262,24 +284,23 @@ frame:RegisterEvent("SPELL_CONFIRMATION_PROMPT")
 lib:RegisterComm("EPGPBONUS", lib.BonusMessageReceiver)
 lib:RegisterComm("EPGPCORPSELOOT", CorpseLootReceiver)
 
-local currentCurrencyID = nil
 frame:SetScript("OnEvent",
-                function(self, event, ...)
-                  if event == "CHAT_MSG_LOOT" then
-                    HandleLootMessage(...)
-                  elseif event == "LOOT_OPENED" then
-                    HandleLootWindow(...)
-                  elseif event == "LOOT_SLOT_CLEARED" then
-                    LOOT_SLOT_CLEARED(event, ...)
-                  elseif event == "BONUS_ROLL_RESULT" then
-                    HandleBonusLootResult(...)
-                  elseif event == "SPELL_CONFIRMATION_PROMPT" then
-		    local spellID, confirmType, text, duration, currencyID = ...;
-		    if confirmType == CONFIRMATION_PROMPT_BONUS_ROLL then
-		      currentCurrencyID = currencyID
-		    end
-                  end
-                end)
+  function(self, event, ...)
+    if event == "CHAT_MSG_LOOT" then
+      HandleLootMessage(...)
+    elseif event == "LOOT_OPENED" then
+      HandleLootWindow(...)
+    elseif event == "LOOT_SLOT_CLEARED" then
+      LOOT_SLOT_CLEARED(event, ...)
+    elseif event == "BONUS_ROLL_RESULT" then
+      HandleBonusLootResult(...)
+    elseif event == "SPELL_CONFIRMATION_PROMPT" then
+      local spellID, confirmType, text, duration, currencyID = ...;
+      if confirmType == CONFIRMATION_PROMPT_BONUS_ROLL then
+        currentCurrencyID = currencyID
+      end
+    end
+  end)
 frame:Show()
 
 --[[###############################################--

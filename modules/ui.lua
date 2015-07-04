@@ -673,7 +673,7 @@ local function EPGPSideFrameEPDropDown_SetList(dropDown)
   local seen = {}
   local dungeons = {CalendarEventGetTextures(1)}
   for i=1,#dungeons,4 do
-    if dungeons[i+2] == 4 and not seen[dungeons[i]] and dungeons[i+3] ~= "Looking For Raid" then
+    if dungeons[i+2] == GetExpansionLevel() and not seen[dungeons[i]] and dungeons[i+3] ~= "Looking For Raid" then
       seen[dungeons[i]] = true
       tinsert(list, dungeons[i])
     end
@@ -1306,7 +1306,7 @@ local function CreateEPGPFrameStandings()
         if EPGP:GetNumAlts(self.name) > 0 then
           GameTooltip:AddLine("\n"..L["Alts"])
           for i=1,EPGP:GetNumAlts(self.name) do
-            GameTooltip:AddLine(EPGP:GetAlt(self.name, i), 1, 1, 1)
+            GameTooltip:AddLine(Ambiguate(EPGP:GetAlt(self.name, i), "short"), 1, 1, 1)
           end
         end
         GameTooltip:ClearAllPoints()
@@ -1342,7 +1342,7 @@ local function CreateEPGPFrameStandings()
       local j = i + offset
       if j <= numMembers then
         row.name = EPGP:GetMember(j)
-        row.cells[1]:SetText(row.name)
+        row.cells[1]:SetText(Ambiguate(row.name, "short"))
         local c = RAID_CLASS_COLORS[EPGP:GetClass(row.name)]
         row.cells[1]:SetTextColor(c.r, c.g, c.b)
         local ep, gp, tep = EPGP:GetEPGP(row.name)
