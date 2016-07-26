@@ -777,6 +777,7 @@ end
 
 function EPGP:IncMassEPBy(reason, amount)
   local awarded = {}
+  local awarded_mains = {}
   local extras_awarded = {}
   local extras_amount = math.floor(self.db.profile.extras_p * 0.01 * amount)
   local extras_reason = reason .. " - " .. L["Standby"]
@@ -792,7 +793,7 @@ function EPGP:IncMassEPBy(reason, amount)
       -- valid member based on the name however.
       local ep, gp, main = EPGP:GetEPGP(name)
       local main = main or name
-      if ep and not awarded[main] and not extras_awarded[main] then
+      if ep and not awarded_mains[main] then
         if EPGP:IsMemberInExtrasList(name) then
           EPGP:IncEPBy(name, extras_reason, extras_amount, true)
           extras_awarded[name] = true
@@ -800,6 +801,7 @@ function EPGP:IncMassEPBy(reason, amount)
           EPGP:IncEPBy(name, reason, amount, true)
           awarded[name] = true
         end
+        awarded_mains[main] = true
       end
     end
   end
