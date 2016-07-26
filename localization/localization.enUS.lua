@@ -69,6 +69,7 @@ L["List errors"] = true
 L["Lists errors during officer note parsing to the default chat frame. Examples are members with an invalid officer note."] = true
 L["Loot"] = true
 L["Loot tracking threshold"] = true
+L["Main"] = true
 L["Make sure you are the only person changing EP and GP. If you have multiple people changing EP and GP at the same time, for example one awarding EP and another crediting GP, you *are* going to have data loss."] = true
 L["Mass EP Award"] = true
 L["Min EP should be a positive number"] = true
