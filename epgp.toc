@@ -1,4 +1,4 @@
-## Interface: 60200
+## Interface: 70000
 ## Title: EPGP
 ## Notes: Effort Points/Gear Points Loot System
 ## Author: Alkis Evlogimenos
@@ -6,7 +6,7 @@
 ## SavedVariables: EPGP_DB
 ## X-Category: Guild
 ## X-Website: http://code.google.com/p/epgp/
-## X-Compatible-With: 60200
+## X-Compatible-With: 70000
 ## X-Since-Interface: 60000
 
 libs\LibStub\LibStub.lua
