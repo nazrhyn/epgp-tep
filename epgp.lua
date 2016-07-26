@@ -344,6 +344,11 @@ local function HandleDeletedGuildNote(callback, name)
   DestroyStandings()
 end
 
+local ourRealmName = string.gsub(GetRealmName(), "%s+", "")     -- Realm name with no spaces
+function EPGP:GetOurRealmName()
+  return ourRealmName
+end
+
 local function ParseGuildNote(callback, name, note)
   -- Debug("Parsing Guild Note for %s [%s]", name, note)
   -- Delete current state about this toon.
@@ -354,17 +359,26 @@ local function ParseGuildNote(callback, name, note)
     ep_data[name] = ep
     gp_data[name] = gp
   else
-    local main_ep = EPGP:DecodeNote(GS:GetNote(note))
+    local mainName = note
+
+    -- Allow specifying 'short' names in the officer notes, add the server by default
+    if not string.find(mainName, "%-") then	
+        mainName = mainName .. "-" .. ourRealmName;
+    end
+
+    local main_ep = EPGP:DecodeNote(GS:GetNote(mainName))
     if not main_ep then
       -- This member does not point to a valid main, ignore it.
-      ignored[name] = note
+      ignored[name] = mainName
     else
+      -- Debug("Alt %s of %s", name, mainName)
+
       -- Otherwise setup the alts state
-      main_data[name] = note
-      if not alt_data[note] then
-        alt_data[note] = {}
+      main_data[name] = mainName
+      if not alt_data[mainName] then
+        alt_data[mainName] = {}
       end
-      table.insert(alt_data[note], name)
+      table.insert(alt_data[mainName], name)
       ep_data[name] = nil
       gp_data[name] = nil
     end
