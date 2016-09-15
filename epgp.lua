@@ -185,7 +185,7 @@ selected._count = 0 -- This is safe since _ is not allowed in names
 
 -- for compatibility with release of EPGP Lootmaster; remove after new LM is pushed
 function EPGP:UnitInRaid(name)
-  return UnitInRaid(Ambiguate(name, "none"))
+    return UnitInRaid(Ambiguate(name, "none"))
 end
 
 function EPGP:DecodeNote(note)
@@ -221,7 +221,7 @@ local function AddEPGP(name, ep, gp, suppressTotal)
     local result_tep = current_tep
 
     if not suppressTotal then
-         result_tep = result_tep + ep
+        result_tep = result_tep + ep
     end
 
     -- Compute the actual amounts we can add/subtract.
@@ -235,21 +235,17 @@ local function AddEPGP(name, ep, gp, suppressTotal)
         result_gp = 0
     end
 
-    GS:SetNote(
-        name,
-        EncodeNote(
-            result_ep,
+    GS:SetNote(name,
+        EncodeNote(result_ep,
             result_gp + EPGP.db.profile.base_gp,
-            result_tep
-        )
-    )
+            result_tep))
 
     return ep, gp
 end
 
 -- A wrapper function to handle sort logic for selected
 local function ComparatorWrapper(f)
-  return function(a, b)
+    return function(a, b)
         local a_in_raid = not not UnitInRaid(Ambiguate(a, "none"))
         local b_in_raid = not not UnitInRaid(Ambiguate(b, "none"))
         if a_in_raid ~= b_in_raid then
@@ -318,32 +314,32 @@ local function OutsidersChanged()
 end
 
 local function RefreshStandings(order, showEveryone)
-  -- Debug("Resorting standings")
-  if UnitInRaid("player") then
-    -- If we are in raid:
-    ---  showEveryone = true: show all in raid (including alts) and
-    ---  all leftover mains
-    ---  showEveryone = false: show all in raid (including alts) and
-    ---  all selected members
-    for n in pairs(ep_data) do
-      if showEveryone or UnitInRaid(Ambiguate(n, "none")) or selected[n] then
-        table.insert(standings, n)
-      end
+    -- Debug("Resorting standings")
+    if UnitInRaid("player") then
+        -- If we are in raid:
+        --- showEveryone = true: show all in raid (including alts) and
+        --- all leftover mains
+        --- showEveryone = false: show all in raid (including alts) and
+        --- all selected members
+        for n in pairs(ep_data) do
+            if showEveryone or UnitInRaid(Ambiguate(n, "none")) or selected[n] then
+                table.insert(standings, n)
+            end
+        end
+        for n in pairs(main_data) do
+            if UnitInRaid(Ambiguate(n, "none")) or selected[n] then
+                table.insert(standings, n)
+            end
+        end
+    else
+        -- If we are not in raid, show all mains
+        for n in pairs(ep_data) do
+            table.insert(standings, n)
+        end
     end
-    for n in pairs(main_data) do
-      if UnitInRaid(Ambiguate(n, "none")) or selected[n] then
-        table.insert(standings, n)
-      end
-    end
-  else
-    -- If we are not in raid, show all mains
-    for n in pairs(ep_data) do
-      table.insert(standings, n)
-    end
-  end
 
-  -- Sort
-  table.sort(standings, comparators[order])
+    -- Sort
+    table.sort(standings, comparators[order])
 end
 
 local function DeleteState(name)
@@ -372,6 +368,11 @@ local function HandleDeletedGuildNote(callback, name)
     DestroyStandings()
 end
 
+local ourRealmName = string.gsub(GetRealmName(), "%s+", "") -- Realm name with no spaces
+function EPGP:GetOurRealmName()
+    return ourRealmName
+end
+
 local function ParseGuildNote(callback, name, note)
     -- Debug("Parsing Guild Note for %s [%s]", name, note)
     -- Delete current state about this toon.
@@ -383,24 +384,33 @@ local function ParseGuildNote(callback, name, note)
         gp_data[name] = gp
         tep_data[name] = tep
     else
-        local main_ep = EPGP:DecodeNote(GS:GetNote(note))
+        local mainName = note
+
+        -- Allow specifying 'short' names in the officer notes, add the server by default
+        if not string.find(mainName, "%-") then
+            mainName = mainName .. "-" .. ourRealmName;
+        end
+
+        local main_ep = EPGP:DecodeNote(GS:GetNote(mainName))
         if not main_ep then
             -- This member does not point to a valid main, ignore it.
-            ignored[name] = note
+            ignored[name] = mainName
         else
+            -- Debug("Alt %s of %s", name, mainName)
+
             -- Otherwise setup the alts state
-            main_data[name] = note
-            if not alt_data[note] then
-                alt_data[note] = {}
+            main_data[name] = mainName
+            if not alt_data[mainName] then
+                alt_data[mainName] = {}
             end
-            table.insert(alt_data[note], name)
+            table.insert(alt_data[mainName], name)
             ep_data[name] = nil
             gp_data[name] = nil
             tep_data[name] = nil
         end
+        DestroyStandings()
+        GS:SetOutsidersEnabled(EPGP.db.profile.outsiders == 1)
     end
-    DestroyStandings()
-    GS:SetOutsidersEnabled(EPGP.db.profile.outsiders == 1)
 end
 
 function EPGP:IsRLorML()
@@ -435,6 +445,9 @@ function EPGP:ImportRoster(t, new_base_gp)
     local notes = {}
     for _, entry in pairs(t) do
         local name, ep, gp, tep = unpack(entry)
+        if not string.find(name, "%-") then
+            name = name .. "-" .. ourRealmName;
+        end
         notes[name] = EncodeNote(ep, gp, tep)
     end
 
@@ -622,7 +635,7 @@ function EPGP:RescaleGP()
                 ilvl_denominator = 30
             end
 
-            local delta = -(actual_gp - actual_gp / 2 ^ (decay_ilvl/ilvl_denominator))
+            local delta = -(actual_gp - actual_gp / 2 ^ (decay_ilvl / ilvl_denominator))
             EPGP:IncGPBy(m, "GP Rescale", delta, true, false)
             if delta > 0 then
                 callbacks:Fire("GPAward", name, "GP Decay", delta, true)
@@ -793,6 +806,7 @@ end
 
 function EPGP:IncMassEPBy(reason, amount)
     local awarded = {}
+    local awarded_mains = {}
     local extras_awarded = {}
     local extras_amount = math.floor(self.db.profile.extras_p * 0.01 * amount)
     local extras_reason = reason .. " - " .. L["Standby"]
@@ -808,7 +822,7 @@ function EPGP:IncMassEPBy(reason, amount)
             -- valid member based on the name however.
             local ep, gp, _, main = EPGP:GetEPGP(name)
             local main = main or name
-            if ep and not awarded[main] and not extras_awarded[main] then
+            if ep and not awarded_mains[main] then
                 if EPGP:IsMemberInExtrasList(name) then
                     EPGP:IncEPBy(name, extras_reason, extras_amount, true)
                     extras_awarded[name] = true
@@ -816,15 +830,16 @@ function EPGP:IncMassEPBy(reason, amount)
                     EPGP:IncEPBy(name, reason, amount, true)
                     awarded[name] = true
                 end
+                awarded_mains[main] = true
             end
         end
-    end
-    if next(awarded) then
-        if next(extras_awarded) then
-            callbacks:Fire("MassEPAward", awarded, reason, amount,
-                extras_awarded, extras_reason, extras_amount)
-        else
-            callbacks:Fire("MassEPAward", awarded, reason, amount)
+        if next(awarded) then
+            if next(extras_awarded) then
+                callbacks:Fire("MassEPAward", awarded, reason, amount,
+                    extras_awarded, extras_reason, extras_amount)
+            else
+                callbacks:Fire("MassEPAward", awarded, reason, amount)
+            end
         end
     end
 end

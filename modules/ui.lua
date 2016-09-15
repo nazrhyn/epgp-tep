@@ -1306,8 +1306,19 @@ local function CreateEPGPFrameStandings()
         if EPGP:GetNumAlts(self.name) > 0 then
           GameTooltip:AddLine("\n"..L["Alts"])
           for i=1,EPGP:GetNumAlts(self.name) do
-            GameTooltip:AddLine(Ambiguate(EPGP:GetAlt(self.name, i), "short"), 1, 1, 1)
+            local altName = EPGP:GetAlt(self.name, i)
+
+            -- Show short alt name for alts from our server and long for others
+            local dashIndex = string.find(altName, "%-")
+            if EPGP:GetOurRealmName() == string.sub(altName, dashIndex + 1) then
+              altName = string.sub(altName, 1, dashIndex - 1)
+            end
+            GameTooltip:AddLine(altName, 1, 1, 1)
           end
+        elseif EPGP:GetMain(self.name) ~= self.name then
+          -- Show the main name for alts
+          GameTooltip:AddLine("\n"..L["Main"])
+          GameTooltip:AddLine(EPGP:GetMain(self.name), 1, 1, 1)
         end
         GameTooltip:ClearAllPoints()
         GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT")

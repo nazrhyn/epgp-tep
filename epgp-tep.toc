@@ -1,12 +1,12 @@
-## Interface: 60200
+## Interface: 70000
 ## Title: EPGP-TEP
 ## Notes: Effort Points/Gear Points Loot System With Total EP Tracking
 ## Author: pelf
-## Version: 5.11.11-tep
+## Version: 5.12.4-tep
 ## SavedVariables: EPGP_TEP_DB
 ## X-Category: Guild
 ## X-Website: https://github.com/nazrhyn/epgp-tep
-## X-Compatible-With: 60200
+## X-Compatible-With: 70000
 ## X-Since-Interface: 60000
 
 libs\LibStub\LibStub.lua

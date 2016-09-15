@@ -39,7 +39,9 @@ local currentCurrencyID = nil
 
 -- Create a handle for a emulation timer
 local function GenerateDistributionID(player, itemLink, quantity)
-  local itemid, suffixid, uniqueid = tostring(itemLink):match("|Hitem:(%d+):%d+:%d+:%d+:%d+:%d+:(\-*%d+):(\-*%d+)")
+  local itemid, suffixid, uniqueid = tostring(itemLink):match("|Hitem:(%d+):%d*:%d*:%d*:%d*:%d*:(\-*%d*):(\-*%d*)")
+  if (suffixid == "") then suffixid = "0"; end
+  if (uniqueid == "") then uniqueid = "0"; end
   return format('%s:%s:%s',
           tostring(player),
           tostring(itemid..":"..uniqueid),
