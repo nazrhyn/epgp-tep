@@ -2,7 +2,7 @@
 ## Title: EPGP-TEP
 ## Notes: Effort Points/Gear Points Loot System With Total EP Tracking
 ## Author: pelf
-## Version: 5.12.4-tep
+## Version: 5.12.5-tep
 ## SavedVariables: EPGP_TEP_DB
 ## X-Category: Guild
 ## X-Website: https://github.com/nazrhyn/epgp-tep
